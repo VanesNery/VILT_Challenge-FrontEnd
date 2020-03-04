@@ -1,25 +1,36 @@
-import React, { useEffect, useState } from "react";
-import firebase from "./util/firebaseUtils";
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import firebase from './utils/firebaseUtils';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Card from './components/Card';
 
 export default function App() {
+const [list, setList] = useState([]);
+
+useEffect(()=> {
+  firebase
+  .firestore()
+  .collection('contributors')
+  .get()
+  .then((querySnapshot) => {
+    const people = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    setList(people);
+  });
+},[]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+      <Header/>
+      <h3>Lista de Colaboradores</h3>
+      {list.map(list => (
+          <Card
+            {...list}
+          />
+        ))}
+      <Footer txt='Criador por Vanessa Nery'/>
+    </main>
   );
 }
