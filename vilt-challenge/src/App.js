@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, css } from "aphrodite";
+import growl from "growl-alert";
+import "growl-alert/dist/growl-alert.css";
 import firebase from "./utils/firebaseUtils";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,12 +13,17 @@ export default function App() {
   const [list, setList] = useState([]);
   const [name, setName] = useState("");
   const [office, setOffice] = useState("");
-  const [hiring, setHiring] = useState("");
+
+  const refresh = {
+    fadeAway: true,
+    fadeAwayTimeout: 2000
+  };
 
   useEffect(() => {
     firebase
       .firestore()
       .collection("contributors")
+      .orderBy("hiring", "desc")
       .get()
       .then(querySnapshot => {
         const people = querySnapshot.docs.map(doc => ({
@@ -27,15 +34,45 @@ export default function App() {
       });
   }, []);
 
+  const updateStatus = list => {
+    if (list.status === "Ausente") {
+      firebase
+        .firestore()
+        .collection("contributors")
+        .doc(list.id)
+        .update({ status: "Pendente" })
+        .then(() => {
+          growl.success({ text: "Seu Status foi alterado", ...refresh });
+        });
+    } else if (list.status === "Concluído") {
+      firebase
+        .firestore()
+        .collection("contributors")
+        .doc(list.id)
+        .update({ status: "Pendente" })
+        .then(() => {
+          growl.success({ text: "Seu Status foi alterado", ...refresh });
+        });
+    }
+  };
+
   const addContributor = () => {
-    if ((name && office && hiring) === 0) {
-      alert("Por Favor, preencha todos os dados! ");
+    if ((name && office) === 0) {
+      growl.warning({
+        text: "Por Favor, preencha todos os dados!",
+        ...refresh
+      });
     } else {
       const person = {
         name,
         office,
-        hiring: new Date().getTime(),
-        status: "Novato"
+        hiring:
+          new Date().getDay() +
+          "/" +
+          new Date().getMonth() +
+          "/" +
+          new Date().getFullYear(),
+        status: "Pendente"
       };
       firebase
         .firestore()
@@ -43,8 +80,7 @@ export default function App() {
         .add(person);
       setName("");
       setOffice("");
-      setHiring("");
-      alert("ColaboradoX cadastrado com sucesso");
+      growl.success({ text: "ColaboradoX cadastrado com sucesso", ...refresh });
     }
   };
 
@@ -68,20 +104,23 @@ export default function App() {
             type="text"
             onChange={e => setOffice(e.target.value)}
           />
-          <label>Data de Admissão: </label>
-          <Input
-            value={hiring}
-            title="Data de Admissão"
-            type="date"
-            onChange={e => setHiring(e.target.value)}
-          />
           <Button handleClick={() => addContributor()} title="Cadastrar" />
         </fieldset>
       </aside>
       <aside className={css(style.asideInsert)}>
         <h3 className={css(style.h3)}>Lista de Colaboradores</h3>
         {list.map(list => (
-          <Card {...list} />
+          <Card
+            key={list.id}
+            name={list.name}
+            office={list.office}
+            hiring={list.hiring}
+            status={list.status}
+            onClick={()=>updateStatus(list)}
+            title={list.status === "Ausente"
+            ? "Quero fazer os Cookies"
+            : "Preciso Adiar"}
+          />
         ))}
       </aside>
       <Footer txt="Criador por Vanessa Nery" />
@@ -98,26 +137,25 @@ const style = StyleSheet.create({
     width: "15vw",
     margin: "1% 20%",
     float: "left",
-    height: "19vw",
     border: "medium solid",
     borderRadius: "1vw",
     alignItems: "center",
     padding: "1vw"
   },
-  asideInsert:{
+  asideInsert: {
     width: "40%",
     float: "left",
     alignItems: "center",
-    margin: '1% -8%',
+    margin: "1% -8%"
   },
-  asideContributors:{
+  asideContributors: {
     margin: "4% -3% 7% 1.8% ",
     width: "45%",
     float: "left",
     alignItems: "center",
-    padding: "1vw",
+    padding: "1vw"
   },
-  main:{
-    width: '99.6%'
+  main: {
+    width: "99.6%"
   }
-});
+}); 
