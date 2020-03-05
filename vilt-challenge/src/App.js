@@ -1,36 +1,123 @@
-import React, { useEffect, useState } from 'react';
-import firebase from './utils/firebaseUtils';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Card from './components/Card';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, css } from "aphrodite";
+import firebase from "./utils/firebaseUtils";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Card from "./components/Card";
+import Input from "./components/Input";
+import Button from "./components/Button";
 
 export default function App() {
-const [list, setList] = useState([]);
+  const [list, setList] = useState([]);
+  const [name, setName] = useState("");
+  const [office, setOffice] = useState("");
+  const [hiring, setHiring] = useState("");
 
-useEffect(()=> {
-  firebase
-  .firestore()
-  .collection('contributors')
-  .get()
-  .then((querySnapshot) => {
-    const people = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    }))
-    setList(people);
-  });
-},[]);
+  useEffect(() => {
+    firebase
+      .firestore()
+      .collection("contributors")
+      .get()
+      .then(querySnapshot => {
+        const people = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setList(people);
+      });
+  }, []);
+
+  const addContributor = () => {
+    if ((name && office && hiring) === 0) {
+      alert("Por Favor, preencha todos os dados! ");
+    } else {
+      const person = {
+        name,
+        office,
+        hiring: new Date().getTime(),
+        status: "Novato"
+      };
+      firebase
+        .firestore()
+        .collection("contributors")
+        .add(person);
+      setName("");
+      setOffice("");
+      setHiring("");
+      alert("ColaboradoX cadastrado com sucesso");
+    }
+  };
 
   return (
-    <main>
-      <Header/>
-      <h3>Lista de Colaboradores</h3>
-      {list.map(list => (
-          <Card
-            {...list}
+    <main className={css(style.main)}>
+      <Header />
+      <aside className={css(style.asideContributors)}>
+        <fieldset className={css(style.input)}>
+          <legend>Cadastro dos Colaboradores</legend>
+          <label>Nome do Colaborador: </label>
+          <Input
+            value={name}
+            title="Nome do Colaborador"
+            type="text"
+            onChange={e => setName(e.target.value)}
           />
+          <label>Cargo: </label>
+          <Input
+            value={office}
+            title="Cargo"
+            type="text"
+            onChange={e => setOffice(e.target.value)}
+          />
+          <label>Data de Admissão: </label>
+          <Input
+            value={hiring}
+            title="Data de Admissão"
+            type="date"
+            onChange={e => setHiring(e.target.value)}
+          />
+          <Button handleClick={() => addContributor()} title="Cadastrar" />
+        </fieldset>
+      </aside>
+      <aside className={css(style.asideInsert)}>
+        <h3 className={css(style.h3)}>Lista de Colaboradores</h3>
+        {list.map(list => (
+          <Card {...list} />
         ))}
-      <Footer txt='Criador por Vanessa Nery'/>
+      </aside>
+      <Footer txt="Criador por Vanessa Nery" />
     </main>
   );
 }
+
+const style = StyleSheet.create({
+  h3: {
+    display: "flex",
+    justifyContent: "center"
+  },
+  input: {
+    width: "15vw",
+    margin: "1% 20%",
+    float: "left",
+    height: "19vw",
+    border: "medium solid",
+    borderRadius: "1vw",
+    alignItems: "center",
+    padding: "1vw"
+  },
+  asideInsert:{
+    width: "40%",
+    float: "left",
+    alignItems: "center",
+    margin: '1% -8%',
+  },
+  asideContributors:{
+    margin: "4% -3% 7% 1.8% ",
+    width: "45%",
+    float: "left",
+    alignItems: "center",
+    padding: "1vw",
+  },
+  main:{
+    width: '99.6%'
+  }
+});

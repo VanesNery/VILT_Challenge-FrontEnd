@@ -16,9 +16,9 @@ return(
 const styles = StyleSheet.create({
 header:{
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   padding: '1vw',
-  margin: '-0.8vw',
+  margin: '-1vw',
   fontSize: '3vw',
   color: 'white',
   background: '#00b7ff'
