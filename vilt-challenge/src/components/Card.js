@@ -3,12 +3,15 @@ import { StyleSheet, css } from "aphrodite";
 import Button from "./Button";
 
 export default function Card (props){
-
+    const calculateTime = props => {
+        const date = new Date(props).toLocaleString('pt-br');
+        return date;
+      };
         return(
         <span className={css(style.card)}>
             <p>Nome: {props.name}</p>
             <p>Cargo: {props.office}</p>
-            <p>Data de Admissão: {props.hiring}</p>
+            <p>Data de Admissão: {calculateTime(props.hiring)}</p>
             <p>Já fez Cookies: {props.status}</p>
             <Button handleClick={props.onClick} title={props.title}/>
         </span>

@@ -13,6 +13,7 @@ export default function App() {
   const [list, setList] = useState([]);
   const [name, setName] = useState("");
   const [office, setOffice] = useState("");
+  const [hiring, setHiring] = useState("");
 
   const refresh = {
     fadeAway: true,
@@ -30,26 +31,44 @@ export default function App() {
           id: doc.id,
           ...doc.data()
         }));
-        setList(people);
+        setList(people)
       });
-  }, []);
+  });
 
   const updateStatus = list => {
-    if (list.status === "Ausente") {
+    if (list.status === "Pendente") {
+      list.status = "Concluído";
       firebase
         .firestore()
         .collection("contributors")
         .doc(list.id)
-        .update({ status: "Pendente" })
+        .update({
+          status: "Concluído"
+        })
         .then(() => {
           growl.success({ text: "Seu Status foi alterado", ...refresh });
         });
     } else if (list.status === "Concluído") {
+      list.status = "Ausente/Licença";
       firebase
         .firestore()
         .collection("contributors")
         .doc(list.id)
-        .update({ status: "Pendente" })
+        .update({
+          status: "Ausente/Licença"
+        })
+        .then(() => {
+          growl.success({ text: "Seu Status foi alterado", ...refresh });
+        });
+    } else {
+      list.status = "Pendente";
+      firebase
+        .firestore()
+        .collection("contributors")
+        .doc(list.id)
+        .update({
+          status: "Pendente"
+        })
         .then(() => {
           growl.success({ text: "Seu Status foi alterado", ...refresh });
         });
@@ -57,7 +76,7 @@ export default function App() {
   };
 
   const addContributor = () => {
-    if ((name && office) === 0) {
+    if ((name && office && hiring) === "null") {
       growl.warning({
         text: "Por Favor, preencha todos os dados!",
         ...refresh
@@ -66,12 +85,7 @@ export default function App() {
       const person = {
         name,
         office,
-        hiring:
-          new Date().getDay() +
-          "/" +
-          new Date().getMonth() +
-          "/" +
-          new Date().getFullYear(),
+        hiring: Date.now(),
         status: "Pendente"
       };
       firebase
@@ -80,6 +94,7 @@ export default function App() {
         .add(person);
       setName("");
       setOffice("");
+      setHiring("");
       growl.success({ text: "ColaboradoX cadastrado com sucesso", ...refresh });
     }
   };
@@ -104,6 +119,14 @@ export default function App() {
             type="text"
             onChange={e => setOffice(e.target.value)}
           />
+          <label>Data de Admissão: </label>
+          <Input
+            value={hiring}
+            title="Data de Admissão"
+            placeholder="dd/mm/aaaa"
+            type="date"
+            onChange={e => setHiring(e.target.value)}
+          />
           <Button handleClick={() => addContributor()} title="Cadastrar" />
         </fieldset>
       </aside>
@@ -116,10 +139,12 @@ export default function App() {
             office={list.office}
             hiring={list.hiring}
             status={list.status}
+            title={
+              list.status === "Pendente"
+                ? "Concluído"
+                : "Ausente/Licença ?"
+            }
             onClick={()=>updateStatus(list)}
-            title={list.status === "Ausente"
-            ? "Quero fazer os Cookies"
-            : "Preciso Adiar"}
           />
         ))}
       </aside>
@@ -158,4 +183,4 @@ const style = StyleSheet.create({
   main: {
     width: "99.6%"
   }
-}); 
+});
