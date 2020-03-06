@@ -13,7 +13,7 @@ export default function App() {
   const [list, setList] = useState([]);
   const [name, setName] = useState("");
   const [office, setOffice] = useState("");
-  const [date, setDate] = useState("");
+  const [hiring, setHiring] = useState("");
 
   const refresh = {
     fadeAway: true,
@@ -24,27 +24,30 @@ export default function App() {
     firebase
       .firestore()
       .collection("contributors")
-      // .orderBy("hiring", "desc")
+      .orderBy("hiring", "desc")
       .get()
       .then(querySnapshot => {
         const people = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        setList(people);
+        setList(people)
       });
   });
 
   const updateStatus = list => {
     if (list.status === "Pendente") {
-        list.status = "Concluído";
-        firebase
-          .firestore()
-          .collection("contributors")
-          .doc(list.id)
-          .update({
+      list.status = "Concluído";
+      firebase
+        .firestore()
+        .collection("contributors")
+        .doc(list.id)
+        .update({
           status: "Concluído"
-          });
+        })
+        .then(() => {
+          growl.success({ text: "Seu Status foi alterado", ...refresh });
+        });
     } else if (list.status === "Concluído") {
       list.status = "Ausente/Licença";
       firebase
@@ -52,22 +55,28 @@ export default function App() {
         .collection("contributors")
         .doc(list.id)
         .update({
-        status: "Ausente/Licença"
+          status: "Ausente/Licença"
+        })
+        .then(() => {
+          growl.success({ text: "Seu Status foi alterado", ...refresh });
         });
-  } else {
-    list.status = "Pendente";
-    firebase
-      .firestore()
-      .collection("contributors")
-      .doc(list.id)
-      .update({
-      status: "Pendente"
-      });
-}
+    } else {
+      list.status = "Pendente";
+      firebase
+        .firestore()
+        .collection("contributors")
+        .doc(list.id)
+        .update({
+          status: "Pendente"
+        })
+        .then(() => {
+          growl.success({ text: "Seu Status foi alterado", ...refresh });
+        });
+    }
   };
 
   const addContributor = () => {
-    if ((name && office && date) === null) {
+    if ((name && office && hiring) === "null") {
       growl.warning({
         text: "Por Favor, preencha todos os dados!",
         ...refresh
@@ -76,17 +85,17 @@ export default function App() {
       const person = {
         name,
         office,
-        date,
+        hiring: Date.now(),
         status: "Pendente"
       };
       firebase
         .firestore()
         .collection("contributors")
         .add(person);
-        setName("");
-        setOffice("");
-        setDate("");
-        growl.success({ text: "ColaboradoX cadastrado com sucesso", ...refresh });
+      setName("");
+      setOffice("");
+      setHiring("");
+      growl.success({ text: "ColaboradoX cadastrado com sucesso", ...refresh });
     }
   };
 
@@ -112,11 +121,11 @@ export default function App() {
           />
           <label>Data de Admissão: </label>
           <Input
-            value={date}
+            value={hiring}
             title="Data de Admissão"
             placeholder="dd/mm/aaaa"
-            type="text"
-            onChange={e => setDate(e.target.value)}
+            type="date"
+            onChange={e => setHiring(e.target.value)}
           />
           <Button handleClick={() => addContributor()} title="Cadastrar" />
         </fieldset>
@@ -174,4 +183,5 @@ const style = StyleSheet.create({
   main: {
     width: "99.6%"
   }
-}); 
+});
+
