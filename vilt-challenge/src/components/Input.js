@@ -3,8 +3,10 @@ import { StyleSheet, css } from "aphrodite";
 
 export default function Input (props){
     return(
-        <input className={css(style.input)} placeholder={props.placeholder} value={props.value} onChange={props.onChange} 
-        title={props.title} type={props.type} />
+        <input className={css(style.input)} placeholder={props.placeholder} 
+        value={props.value} 
+        onChange={props.onChange} 
+        title={props.title} type={props.type} name={props.name} />
     )
 }
 

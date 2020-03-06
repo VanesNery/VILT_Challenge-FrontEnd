@@ -6,8 +6,7 @@ export default function Button(props) {
     <button
       className={css(style.button)}
       onClick={props.handleClick}
-    >
-      <p>{props.title}</p>
+    >{props.title}
     </button>
   );
 }
