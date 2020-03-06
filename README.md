@@ -23,9 +23,11 @@ O site possui opção de cadastramento dos colaboradores, opções para mudar o 
 ## 3. Como Utilizar
 
 1 - O colaborador pode colocar o nome, cargo, data de admissão e encaminhar para o banco de dados.
-2 - Botões de 
 
- 
+2 - Botão que muda conforme o Status (Pedente, Ausente e Concluído). 
+
+3 - Já vem ordenado por Data de Admissão
+
 ## 4. Tecnologias Utilizadas
 
 * HTML5
@@ -43,11 +45,11 @@ O aplicativo utilizou scripts npm-scripts e teve start, build e deploy, que são
 
 [História de usuário 1] Um novo colaborador entra e deve ser a pessoa do próximo cookie (no imediato na próxima semana)
 
-Anotar o nome do funcionario e .
+Anotar o nome do funcionario, cargo e data de admissão.
 Adicionar colaborador.
 Guardar em algum banco de dados.
 
-[História de usuário 2] Um dos colaboradores obtém alguns dias de férias aprovados na mesma semana em que ele seria responsável pelos cookie
+[História de usuário 2] Um dos colaboradores está trabalhando no exterior / fica doente e não pode ir ao escritório na semana
 
 Ver as pessoas em ordem decrescente.
 Mudar o Status se já fez os cookies.
@@ -55,9 +57,7 @@ Mudar o Status se já fez os cookies.
 [História de usuário 3] Forneça uma maneira de adiar a pessoa de uma determinada semana (caso a pessoa esteja de licença / ausente por qualquer motivo)
 
 Ver as pessoas em ordem decrescente
-Consegue adiar em caso de Férias ou outra ausência
-
-[História de usuário 4] Um dos colaboradores está trabalhando no exterior / fica doente e não pode ir ao escritório na semana
+Consegue adiar em caso de Férias ou outra ausência.
 
 ## 7. Imagem da Interface
 
@@ -65,4 +65,4 @@ Consegue adiar em caso de Férias ou outra ausência
 
 ## 8. Link
 
-link
+https://vilt-challenge.firebaseapp.com/vilt-challenge
