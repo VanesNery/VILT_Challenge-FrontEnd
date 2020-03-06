@@ -61,7 +61,7 @@ Consegue adiar em caso de Férias ou outra ausência.
 
 ## 7. Imagem da Interface
 
-- Tela do sistema ![Tela do sistema](/public/img/viltChallenge.gif)
+- Tela do sistema ![Tela do sistema](/vilt-challenge/public/img/viltChallenge.gif)
 
 ## 8. Link
 
